@@ -1,3 +1,5 @@
+
+
 local level_heights = { 35, 280, 500 }
 local level_heights_recipients = {
 	"/hero#hero"
@@ -13,8 +15,13 @@ local spike_spawn_cooldown = 5
 
 local star_spawn_cooldown = 2
 
+local gameTime = 0
+local spikeSpawnExponentialIncrease = 0.05
+
 function init(self)
-	
+
+	local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
+	go.set(text_url, "color.w", 0) -- Sätter alfa (w) till 0 för att göra den osynlig
 	-- Skicka meddelandet till alla mottagare
 	for _, recipient in ipairs(level_heights_recipients) do
 		msg.post(recipient, "set_level_heights", { heights = level_heights })
@@ -26,6 +33,7 @@ function init(self)
 end
 
 function update(self, dt)
+	gameTime = gameTime + dt
 	def_objekt_spawn_cooldown = def_objekt_spawn_cooldown -dt
 	--if def_objekt_spawn_cooldown < 0 then
 		coin_spawn_cooldown = coin_spawn_cooldown - dt
@@ -42,30 +50,35 @@ function update(self, dt)
 
 		end
 		if spike_spawn_cooldown < 0 then
-			local h = level_heights[math.random(#level_heights)]
+			local ha = level_heights[math.random(#level_heights)]
 			--print("hhhhhhh    " ..h)
-			local new_spike = factory.create("#spike_factory",  vmath.vector3(1600, h, 0), nil, {}, 0.5)
+			local new_spike = factory.create("#spike_factory",  vmath.vector3(1600, ha, 0), nil, {}, 0.5)
 			msg.post(new_spike, "set_speed", { speed = def_move_speed })
-			spike_spawn_cooldown = 10
+			local cooldown =  7 * math.exp(-spikeSpawnExponentialIncrease * gameTime)
+			if cooldown < 1 then
+				cooldown = 1
+			end
+			spike_spawn_cooldown = cooldown
+			print("C:   "..cooldown)
 			def_objekt_spawn_cooldown = def_objekt_spawn_cooldown_add
 
 		end
 		--end
 
 		if star_spawn_cooldown < 0 then
-			local h = level_heights[math.random(#level_heights)]
-			h = h + math.random(10, 100)
-			local new_objekt = factory.create("#star_factory",  vmath.vector3(1600, h, 0), nil, {}, 0.5)
+			local hs = level_heights[math.random(#level_heights)]
+			hs = hs + math.random(10, 100)
+			local new_objekt = factory.create("#star_factory",  vmath.vector3(1600, hs, 0), nil, {}, 0.5)
 			msg.post(new_objekt, "set_speed", { speed = math.random(3, 6) })
 
 			local random_rotation = math.random() * 360  -- Slumpmässig rotation mellan 0 och 360 grader
 			--print(random_rotation)
 			local random_rotation_rad = math.rad(random_rotation)  -- Omvandla till radianer
 			go.set(new_objekt, "rotation", vmath.quat_rotation_z(random_rotation_rad))
-
+			go.set_scale(math.random(1, 1.8), new_objekt)
 			
 
-			star_spawn_cooldown = math.random(4, 10)
+			star_spawn_cooldown = math.random(4, 8)
 
 		end
 	

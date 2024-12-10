@@ -16,6 +16,6 @@ input_method = HiddenInputField
 scale_mode = stretch
 
 [project]
-title = EndlessRunnerMarcusEditionLinked
+title = V3_EndlessRunnerMarcusEditionLinked
 dependencies#0 = https://github.com/defold/extension-spine/archive/refs/tags/3.5.3.zip
 

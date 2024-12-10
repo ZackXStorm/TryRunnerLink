@@ -1,5 +1,15 @@
 -- gravity pulling the player down in pixel units/sˆ2
 local gravity = -20
+local dmgFlickerInterval = 0.5
+local dmgInvaluableDuration  = 3
+local dmgFlickerCooldwoon = 0
+local dmgInvaluableLeft = 0
+local playerIsInvaluable = false
+local dmgTaken = false
+local playerIsDead = false
+local lives = 3
+local dmgTran = 0.5
+local showSprite = dmgTran
 
 
 local level_heights
@@ -7,8 +17,8 @@ local level_heights
 local jump_takeoff_speed = 1300
 
 -- 
-local at_level = 0
-local target_level = 1
+local at_level = 1
+--local target_level = 1
 local currently_jumping = false
 local foot_pos
 
@@ -52,7 +62,14 @@ local function update_animation(self)
 	-- make sure the right animation is playing
 	
 	if self.ground_contact then
-		play_animation(self, hash("run"))
+		if at_level == 1 then
+			
+			play_animation(self, hash("run"))
+		else
+
+			
+			play_animation(self, hash("hoverboard"))
+		end
 		--spine.play_anim("#spinemodel", "run", go.PLAYBACK_LOOP_FORWARD, { blend_duration = 0.15 }, 0) -- Track 0
 		--spine.play_anim("#spinemodel", "shoot", go.PLAYBACK_LOOP_FORWARD, { blend_duration = 0.15 }, 1) -- Track 1
 	else
@@ -61,6 +78,35 @@ local function update_animation(self)
 	end
 end
 function update(self, dt)
+
+	
+	dmgFlickerCooldwoon = dmgFlickerCooldwoon - dt
+	dmgInvaluableLeft = dmgInvaluableLeft - dt
+
+	if dmgInvaluableLeft < 0 then
+		playerIsInvaluable = false
+	end
+
+	
+	if dmgTaken and dmgInvaluableLeft > 0 and dmgFlickerCooldwoon < 0 then
+		
+		local spine_model_url = msg.url("hero#spinemodel") -- Kontrollera komponentvägen
+		go.set(spine_model_url, "tint.w", showSprite) -- Sätter alfa till 0 för att göra modellen osynlig
+		dmgFlickerCooldwoon = dmgFlickerInterval
+		if showSprite < 1 then
+			showSprite = 1
+		else
+			showSprite = dmgTran
+		end
+	end
+
+
+	if dmgTaken and dmgInvaluableLeft < 0 then 
+		dmgTaken = false
+		playerIsInvaluable = false
+		go.set("hero#spinemodel", "tint.w", 1) 
+	end
+	
 	--(tostring(self.ground_contact))
 	local gravity = vmath.vector3(0, gravity, 0)
 	
@@ -68,21 +114,16 @@ function update(self, dt)
 		-- Apply gravity if there's no ground contact
 		self.velocity = self.velocity + gravity
 	end
+
+
+	
 	local pos = go.get_position()
 
 
 	
 	--print("Player position: ", pos)
 
-	if pos.y <= 20 then
-		at_level = 0
-	elseif pos.y <= 350 then
-		at_level = 1
-	elseif pos.y >= 700 then
-		at_level = 3
-	else
-		at_level = 2
-	end
+
 
 	--print(self.ground_contact, "  ::  ", not jumping )
 	
@@ -162,17 +203,61 @@ function on_message(self, message_id, message, sender)
 
 	elseif message_id == hash("contact_point_response") then
 		-- check if we received a contact point message
-		if message.group == hash("danger") then
-			-- Die and restart
-			play_animation(self, hash("death"))
-			msg.post("#collisionobject", "disable")
-			print("Döööööööö")
-			go.animate(".", "euler.z", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_LINEAR, 0.7)
-			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_position().y - 200, go.EASING_INSINE, 0.5, 0.2,
-			function()
-				msg.post("hero#hero", "reset")
-				print("Reset")
-			end)
+		if message.group == hash("danger") and not playerIsInvaluable then
+			playerIsInvaluable = true
+			dmgInvaluableLeft = dmgInvaluableDuration
+
+			-- Hämta aktuell text från labeln
+			local current_text = label.get_text("/text_holder#Coins")
+			local current_coins = tonumber(string.match(current_text, "%d+")) or 0
+			-- Extrahera nuvarande antal mynt från texten (om den t.ex. är "Coins: 3")
+			local red = (  math.floor((current_coins / 3) + 0.5)) -- Lägg till 0.5 och ta golvet
+			local minCoinLos = 5
+			
+			if red < minCoinLos then -- Förlorar minimum 10 coins
+				red = minCoinLos
+			end
+			
+			local new_coins = current_coins - red
+			local new_text = "Coins: "
+			if new_coins >= 0 then
+				dmgTaken = true
+				
+				
+				local new_coins = current_coins - red
+				--print(current_coins .."  - ".. red .. "  =  " ..new_coins )
+
+				-- Uppdatera texten i labeln med det nya värdet
+				new_text = new_text .. tostring(new_coins)
+				
+			else 
+				
+				dmgTaken = true
+				new_text = new_text .. "0"
+				lives = lives - 1
+				label.set_text("/text_holder#Lives", "Lives: "..lives)
+			end
+			label.set_text("/text_holder#Coins", new_text)
+			if lives <= 0 then
+				-- Die and restart
+				playerIsDead = true
+				play_animation(self, hash("death"))
+				msg.post("#collisionobject", "disable")
+				--print("Dmg taken")
+				go.animate(".", "euler.z", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_LINEAR, 0.7)
+				--go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_position().y - 200, go.EASING_INSINE, 0.5, 0.2,
+				--function()
+				--	msg.post("hero#hero", "reset")
+				--	print("Reset")
+				--end)
+				local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
+				go.set(text_url, "color.w", 1) -- Sätter alfa (w) till 1 för att göra den synlig
+				
+			end
+			
+			
+			
+			
 		elseif message.group == hash("geometry") then
 			handle_geometry_contact(self, message.normal, message.distance)
 		end
@@ -181,29 +266,30 @@ end
 
 local function jump(self)
 	-- only allow jump from ground
-	if self.ground_contact and target_level < 3 then
+	if self.ground_contact and at_level < 3 and not playerIsDead then
 		-- set take-off 
 		
-		
-		target_level = target_level + 1
+		--print("was at  ".. at_level)
+		at_level = at_level + 1
 		
 		local pos = go.get_position()
-		pos.y = level_heights[target_level]
-		print(target_level.. "  ".. level_heights[target_level])
+		pos.y = level_heights[at_level]
+		--print(at_level.. "  ".. level_heights[at_level])
 		go.set_position(pos)
 		--print(target_level)
 		jumping = true
-		print("Jump")
+		--print("Jump")
+		
 	end
 end
 
 local function descend(self)
-	if target_level > 1 then
-		target_level = target_level - 1
+	if at_level > 1 and not playerIsDead then
+		at_level = at_level - 1
 
 		local pos = go.get_position()
-		pos.y = level_heights[target_level]
-		print(target_level.. "  ".. level_heights[target_level])
+		pos.y = level_heights[at_level]
+		--print(at_level.. "  ".. level_heights[at_level])
 		go.set_position(pos)
 	end
 end
@@ -238,7 +324,7 @@ function on_input(self, action_id, action)
 		local hero_pos = go.get_position()
 		local bullet_pos = vmath.vector3(hero_pos.x + 30, hero_pos.y + 100, hero_pos.z)
 		factory.create("#bullet_factory", bullet_pos)
-		print("SHOOOT")
+		--print("SHOOOT")
 		play_animation(self, hash("shoot"))
 	end
 
