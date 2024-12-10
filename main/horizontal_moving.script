@@ -1,0 +1,17 @@
+local speed = 10
+
+function update(self, dt)
+
+	local pos = go.get_position()
+	pos.x = pos.x - speed
+	go.set_position(pos)
+
+end
+
+function on_message(self, message_id, message, sender)
+
+	if message_id == hash("set_speed") then 
+		speed = message.speed
+		print("speeeed")
+	end
+end

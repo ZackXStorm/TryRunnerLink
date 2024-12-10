@@ -1,0 +1,53 @@
+-- coin.script
+
+function init(self)
+	self.collected = false
+	create_coins(self)
+	
+end
+
+
+
+
+function create_coins(self)
+
+	local spacing = 56
+	local pos = go.get_position()
+	pos.y = pos.y + spacing
+	go.set_position(pos)
+		--msg.post(self, "set_parent", { parent_id = go.get_id() }) -- <1>
+		--msg.post(self, "start_animation", { delay = i/10 }) -- <2>
+		
+	
+end
+
+function on_message(self, message_id, message, sender)
+
+	if message_id == hash("create_coins") then
+		create_coins(self, message)
+	end
+
+	
+	if self.collected == false and message_id == hash("collision_response") then
+		self.collected = true
+		msg.post("#sprite", "disable")
+		
+		-- Hämta aktuell text från labeln
+		local current_text = label.get_text("/text_holder#Coins")
+
+		-- Extrahera nuvarande antal mynt från texten (om den t.ex. är "Coins: 3")
+		local current_coins = tonumber(string.match(current_text, "%d+")) or 0
+
+		-- Öka antal insamlade mynt
+		local new_coins = current_coins + 1
+
+		-- Uppdatera texten i labeln med det nya värdet
+		local new_text = "Coins: " .. tostring(new_coins)
+		label.set_text("/text_holder#Coins", new_text)
+
+		
+	elseif message_id == hash("start_animation") then
+		pos = go.get_position()
+		go.animate(go.get_id(), "position.y", go.PLAYBACK_LOOP_PINGPONG, pos.y + 24, go.EASING_INOUTSINE, 0.75, message.delay)
+	end
+end   

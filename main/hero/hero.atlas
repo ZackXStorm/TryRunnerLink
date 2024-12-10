@@ -1,0 +1,121 @@
+images {
+  image: "/main/hero/images/crosshair.png"
+}
+images {
+  image: "/main/hero/images/eye-indifferent.png"
+}
+images {
+  image: "/main/hero/images/eye-surprised.png"
+}
+images {
+  image: "/main/hero/images/front-bracer.png"
+}
+images {
+  image: "/main/hero/images/front-fist-closed.png"
+}
+images {
+  image: "/main/hero/images/front-fist-open.png"
+}
+images {
+  image: "/main/hero/images/front-foot.png"
+}
+images {
+  image: "/main/hero/images/front-shin.png"
+}
+images {
+  image: "/main/hero/images/front-thigh.png"
+}
+images {
+  image: "/main/hero/images/front-upper-arm.png"
+}
+images {
+  image: "/main/hero/images/goggles.png"
+}
+images {
+  image: "/main/hero/images/gun.png"
+}
+images {
+  image: "/main/hero/images/head.png"
+}
+images {
+  image: "/main/hero/images/hoverboard-board.png"
+}
+images {
+  image: "/main/hero/images/hoverboard-thruster.png"
+}
+images {
+  image: "/main/hero/images/hoverglow-small.png"
+}
+images {
+  image: "/main/hero/images/mouth-grind.png"
+}
+images {
+  image: "/main/hero/images/mouth-oooo.png"
+}
+images {
+  image: "/main/hero/images/mouth-smile.png"
+}
+images {
+  image: "/main/hero/images/muzzle-glow.png"
+}
+images {
+  image: "/main/hero/images/muzzle-ring.png"
+}
+images {
+  image: "/main/hero/images/muzzle01.png"
+}
+images {
+  image: "/main/hero/images/muzzle02.png"
+}
+images {
+  image: "/main/hero/images/muzzle03.png"
+}
+images {
+  image: "/main/hero/images/muzzle04.png"
+}
+images {
+  image: "/main/hero/images/muzzle05.png"
+}
+images {
+  image: "/main/hero/images/neck.png"
+}
+images {
+  image: "/main/hero/images/portal-bg.png"
+}
+images {
+  image: "/main/hero/images/portal-flare1.png"
+}
+images {
+  image: "/main/hero/images/portal-flare2.png"
+}
+images {
+  image: "/main/hero/images/portal-flare3.png"
+}
+images {
+  image: "/main/hero/images/portal-shade.png"
+}
+images {
+  image: "/main/hero/images/portal-streaks1.png"
+}
+images {
+  image: "/main/hero/images/portal-streaks2.png"
+}
+images {
+  image: "/main/hero/images/rear-bracer.png"
+}
+images {
+  image: "/main/hero/images/rear-foot.png"
+}
+images {
+  image: "/main/hero/images/rear-shin.png"
+}
+images {
+  image: "/main/hero/images/rear-thigh.png"
+}
+images {
+  image: "/main/hero/images/rear-upper-arm.png"
+}
+images {
+  image: "/main/hero/images/torso.png"
+}
+extrude_borders: 2

@@ -1,0 +1,36 @@
+-- controller.script
+local spawn_platforms = true
+go.property("speed", 360)
+local grid = 460
+local platform_heights = { 35, 280, 500 }
+local coins = 3 -- <1>
+local spawn_cooldown = 0
+function init(self)
+	--msg.post("ground/controller_ground#ground", "set_speed", { speed = self.speed })
+	self.gridw = 0
+	self.spawns = {} -- <1>
+	--local sprite_size = go.get("/main/level/platform.go", "plank", "size")
+	--print("HIIIIIIIIIIIIIIIII", sprite_size.y)
+	print("HHHHH   ", platform_heights[2])
+	
+end
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("reset") then -- <2>
+		-- Tell the hero to reset.
+		msg.post("hero#hero", "reset")
+		-- Delete all platforms
+		for i,p in ipairs(self.spawns) do
+			go.delete(p)
+		end
+		self.spawns = {}
+	elseif message_id == hash("delete_spawn") then -- <3>
+		for i,p in ipairs(self.spawns) do
+			if p == message.id then
+				table.remove(self.spawns, i)
+				go.delete(p)
+			end
+		end
+	end
+end

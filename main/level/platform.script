@@ -1,0 +1,36 @@
+-- platform.script
+function init(self)
+	
+	if go.get_position().y < 100 then
+		go.delete("#plank")
+		--print("JJJJJJJJJ", go.get_position())
+	end
+	
+	
+end
+
+function final(self)
+	for i,p in ipairs(self.coins) do
+		go.delete(p)
+	end
+	
+	
+	
+end
+
+function update(self, dt)
+	local pos = go.get_position()
+	if pos.x < -160 then
+		msg.post("/level/controller_level#controller", "delete_spawn", { id = go.get_id() })
+	end
+	pos.x = pos.x - self.speed * dt
+	go.set_position(pos)
+end
+
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("set_speed") then
+		self.speed = message.speed
+	end
+end

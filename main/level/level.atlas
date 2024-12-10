@@ -1,0 +1,22 @@
+images {
+  image: "/main/level/images/ground01.png"
+}
+images {
+  image: "/main/level/images/ground02.png"
+}
+images {
+  image: "/main/level/images/rock_planks.png"
+}
+images {
+  image: "/main/level/images/spikes.png"
+}
+images {
+  image: "/main/level/images/coin.png"
+}
+images {
+  image: "/main/level/images/download-removebg-preview.png"
+}
+images {
+  image: "/main/level/images/star.png"
+}
+extrude_borders: 2

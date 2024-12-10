@@ -1,0 +1,4 @@
+images {
+  image: "/main/bullet/bullet.png"
+}
+extrude_borders: 2

@@ -1,0 +1,25 @@
+function init(self)
+	self.speed = 500
+end
+
+function update(self, dt)
+	local pos = go.get_position()
+	pos.x = pos.x + self.speed * dt
+	go.set_position(pos)
+	if pos.x > 2000 or pos.x < -2000 then
+		go.delete()
+		print("Delete bullet")
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("collision_response") then
+		-- Kolla vilken grupp kulan krockade med
+		local other_group = message.group
+		if other_group == hash("geometry") or other_group == hash("danger")  then
+			print("Bullet hit an obstical!")
+			--self.hit = true
+			go.delete() -- Ta bort kulan
+		end
+	end
+end
