@@ -28,6 +28,8 @@ local key_actions = {
 		ChooseDifficulty = function()
 			choosenDifficulty = "Normal"
 			msg.post("/game_maneger#game_maneger", "mainMenuInput", { gamemode = choosenGameMode, difficulty = choosenDifficulty })
+			label.set_text("/text_holder#GameMode", "Game mode: "..choosenGameMode)
+			label.set_text("/text_holder#Difficulty", "Difficulty mode: "..choosenDifficulty)
 			go.delete()
 		end
 	},
@@ -39,6 +41,8 @@ local key_actions = {
 		ChooseDifficulty = function()
 			choosenDifficulty = "Hard"
 			msg.post("/game_maneger#game_maneger", "mainMenuInput", { gamemode = choosenGameMode, difficulty = choosenDifficulty })
+			label.set_text("/text_holder#GameMode", "Game mode: "..choosenGameMode)
+			label.set_text("/text_holder#Difficulty", "Difficulty mode: "..choosenDifficulty)
 			go.delete()
 		end
 	}

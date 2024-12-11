@@ -1,18 +1,18 @@
 
 -- Timed
-local totalTimeToCollect = 120
+local totalTimeToCollect = 20
 local timeToCollectLeft
 local dmgTimeLosPenelty = 20
 -- 
 
 
 -- Player
-
+local spinemodel_url
 local player
 local playerStartingLives = 3
 local playerTimesHit = 0
 local PlayerCoins
-playerIsDead = true
+local playerX_spawn = 100
 --
 local gameActive = false
 
@@ -20,17 +20,22 @@ local level_heights = { 35, 280, 500 }
 local level_heights_recipients = {
 	"/hero#hero"
 }
+--
+
+local beginEndingRound = false
+local timeWaitAfterGameOver = 5.5
+local allDone = false
 
 local def_objekt_spawn_cooldown = 3
 local def_objekt_spawn_cooldown_add = 3
 
 local def_move_speed = 5
 local coin_spawn_cooldown = 0
-local coin_spawn_interval = 4
+local coin_spawn_interval = 2
 
 local spike_spawn_cooldown = 5
 
-local star_spawn_cooldown = 2
+local star_spawn_cooldown = 0
 
 local gameTime = 0
 local spikeSpawnExponentialIncrease = 0.05
@@ -38,23 +43,32 @@ local spikeSpawnExponentialIncrease = 0.05
 local gamemode
 local difficulty
 
+local width, height = window.get_size()
+
 function init(self)
 
 	timeToCollectLeft = totalTimeToCollect
 	-- Hämtar fönstrets bredd och höjd
-	local width, height = window.get_size()
+	
 	
 	
 	
 	msg.post(".", "acquire_input_focus")
 	--print("HJJJJJJJJJJJJJJJJJJJJJJJJJ")
-	local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
-	go.set(text_url, "color.w", 0) -- Sätter alfa (w) till 0 för att göra den osynlig
+
+
+
+	
+	--local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
+	--go.set(text_url, "color.w", 0) -- Sätter alfa (w) till 0 för att göra den osynlig
+
+
+	
 	-- Skicka meddelandet till alla mottagare
 	for _, recipient in ipairs(level_heights_recipients) do
 		--msg.post(recipient, "set_level_heights", { heights = level_heights })
 	end
-	msg.post("/level/ground/controller_ground#ground", "set_speed", { speed = def_move_speed })
+	UpdateSpeed()
 	--print(def_move_speed)
 	factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[2], 0), nil, {}, 0.5)
 	factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[3], 0), nil, {}, 0.5)
@@ -66,31 +80,46 @@ function final(self)
 	msg.post(".", "release_input_focus")
 end
 function update(self, dt)
+
+
 	
+	if beginEndingRound and gameActive then
+		timeWaitAfterGameOver = timeWaitAfterGameOver - dt
+		print(timeWaitAfterGameOver)
+		if timeWaitAfterGameOver <= 0 then
+			GameOver("Game Finished", vmath.vector4(0, 1, 0, 1))
+		end
+	end
+	if gamemode == "Timed" and timeToCollectLeft <= 0  and gameActive and not beginEndingRound then
+		EndRound()
+	end
 	
 		star_spawn_cooldown = star_spawn_cooldown -dt
 
 
 
 		
-		if star_spawn_cooldown < 0 then
-			local hs = level_heights[math.random(#level_heights)]
-			hs = hs + math.random(10, 100)
-			local new_objekt = factory.create("#star_factory",  vmath.vector3(1600, hs, 0), nil, {}, 0.5)
-			msg.post(new_objekt, "set_speed", { speed = math.random(3, 6) })
+		if not beginEndingRound then
+			if star_spawn_cooldown < 0 then
+				local hs = level_heights[math.random(#level_heights)]
+				hs = hs + math.random(10, 100)
+				local new_objekt = factory.create("#star_factory",  vmath.vector3(1600, hs, 0), nil, {}, 0.5)
+				msg.post(new_objekt, "set_speed", { speed = math.random(3, 6) })
 
-			local random_rotation = math.random() * 360  -- Slumpmässig rotation mellan 0 och 360 grader
-			--print(random_rotation)
-			local random_rotation_rad = math.rad(random_rotation)  -- Omvandla till radianer
-			go.set(new_objekt, "rotation", vmath.quat_rotation_z(random_rotation_rad))
-			go.set_scale(math.random(1, 1.8), new_objekt)
+				local random_rotation = math.random() * 360  -- Slumpmässig rotation mellan 0 och 360 grader
+				--print(random_rotation)
+				local random_rotation_rad = math.rad(random_rotation)  -- Omvandla till radianer
+				go.set(new_objekt, "rotation", vmath.quat_rotation_z(random_rotation_rad))
+				go.set_scale(math.random(1, 1.8), new_objekt)
 
 
-			star_spawn_cooldown = math.random(4, 8)
+				star_spawn_cooldown = math.random(3, 6)
+
+			end
 
 		end
 
-		if  gameActive then
+		if  gameActive and not beginEndingRound then
 			gameTime = gameTime + dt
 			timeToCollectLeft = timeToCollectLeft - dt
 			UpdateTimmer(self)
@@ -117,7 +146,7 @@ function update(self, dt)
 					cooldown = 1
 				end
 				spike_spawn_cooldown = cooldown
-				print("C:   "..cooldown)
+				--print("C:   "..cooldown)
 				def_objekt_spawn_cooldown = def_objekt_spawn_cooldown_add
 
 			end
@@ -129,6 +158,12 @@ function update(self, dt)
 		
 	
 
+end
+
+function EndRound()
+	--UpdateTimmer(self)
+	--UpdateLivesLable(self)
+	beginEndingRound = true
 end
 
 function PlayerTakeDmg(self)
@@ -166,11 +201,10 @@ function PlayerTakeDmg(self)
 		label.set_text("/text_holder#Coins", new_text)
 		if (playerStartingLives - playerTimesHit) <= 0 then
 			-- Die and restart
-			playerIsDead = true
-			gameActive = false
 			msg.post(player, "playerDie")
-			local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
-			go.set(text_url, "color.w", 1) -- Sätter alfa (w) till 1 för att göra den synlig
+			--local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
+			--go.set(text_url, "color.w", 1) -- Sätter alfa (w) till 1 för att göra den synlig
+			EndRound()
 
 		end
 	
@@ -179,7 +213,10 @@ function PlayerTakeDmg(self)
 	if gamemode == "Timed" then
 		playerTimesHit = playerTimesHit + 1
 		timeToCollectLeft = timeToCollectLeft - dmgTimeLosPenelty
-		UpdateLivesLable(self)
+		if timeToCollectLeft < 0 then
+			timeToCollectLeft = 0
+		end
+		UpdateTimmer(self)
 		
 	end
 		
@@ -199,40 +236,92 @@ function UpdateLivesLable(self)
 end
 function UpdateTimmer(self)
 	if gamemode == "Endless" then
-		print("TTTTTT eeeeee")
+		--print("TTTTTT eeeeee")
 		label.set_text("/text_holder#Timer", "Time: "..math.floor(gameTime + 0.5))
 	elseif gamemode == "Timed" then
-		print("TTTTTT tttttttt")
+		--print("TTTTTT tttttttt")
 		label.set_text("/text_holder#Timer", "Time: "..math.floor(timeToCollectLeft + 0.5))
 	end
 	
+end
+
+function UpdateSpeed()
+	msg.post("/level/ground/controller_ground#ground", "set_speed", { speed = def_move_speed })
 end
 	
 function StartGame(self)
 	gameActive = true
 	label.set_text("/text_holder#Coins", "Coins: 0")
 	ApplyDifficulty(self)
-	player = factory.create("/game_maneger#player_factory", vmath.vector3(100, level_heights[1], 0),nil, {}, 0.2)
+	player = factory.create("/game_maneger#player_factory", vmath.vector3(playerX_spawn, level_heights[1], 0),nil, {}, 0.2)
 	msg.post(player, "set_level_heights", { heights = level_heights })
 	msg.post(player, "set_starting_lives", { lives = playerStartingLives })
 	-- Bygg URL för spinemodellen
-	local spinemodel_url = msg.url(player) -- Skapar en bas-URL från instans-ID:t
+	spinemodel_url = msg.url(player) -- Skapar en bas-URL från instans-ID:t
 	spinemodel_url.fragment = "spinemodel" -- Lägg till komponentnamnet
 	msg.post(player, "spineURL", { spineURL = spinemodel_url })
 	UpdateLivesLable(self)
 end
 
+function GameOver(text, color)
+	UpdateLivesLable(self)
+	UpdateTimmer(self)
+	gameActive = false
+	print("GameOver")
+	def_move_speed = 0
+	UpdateSpeed()
+	msg.post(player, "gameOver")
+	local pos = vmath.vector3( width/ 2, (height / 2 )+ 90, 0)
+	local gameObjekt =factory.create("/game_maneger#gameOver_factory", pos, nil, {}, 1)
+	local gameLabel_url = msg.url(gameObjekt)
+	gameLabel_url.fragment = "GameLabel"
+	-- Ändra texten på label-komponenten
+	
+	label.set_text(gameLabel_url, text)
+	--label.set_color(label_url, vmath.vmath.color)
+
+	-- Ändra färgen på label-komponenten (RGB-värden)
+
+
+	local lableList = {"/text_holder#GameMode", "/text_holder#Difficulty","/text_holder#Lives","/text_holder#Coins", "/text_holder#Timer"}
+	local gameLabel_url2 = msg.url(gameObjekt)
+	gameLabel_url2.fragment = "GameStats"
+	local newText = ""
+	local i = 0
+	for _, url in ipairs(lableList) do
+		
+		local tmptext = label.get_text(url)
+		newText = newText ..tmptext
+		i = i +1
+		if i % 2 == 0 or true then
+			newText = newText .."\n"
+		end
+		
+	end
+	label.set_text(gameLabel_url2, newText)
+	--local anim_props = { blend_duration = 0.15 }
+	--spine.play_anim(spinemodel_url, hash("run-to-idle"), go.PLAYBACK_LOOP_FORWARD, anim_props)
+		
+
+end
+
 function ApplyDifficulty(self)
 	if difficulty == "Hard" then
 		print("HARRRRRD")
-		spikeSpawnExponentialIncrease = spikeSpawnExponentialIncrease * 10
-		playerStartingLives = playerStartingLives - 1
-		
+		dmgTimeLosPenelty = dmgTimeLosPenelty * 2
+		spikeSpawnExponentialIncrease = spikeSpawnExponentialIncrease * 8
+		playerX_spawn = playerX_spawn + 300
+		def_move_speed = def_move_speed * 1.5
+		timeWaitAfterGameOver = timeWaitAfterGameOver - 2
+		UpdateSpeed()
 
 		if gamemode == "Endless" then
 			print("Apply endless")
 			coin_spawn_interval = coin_spawn_interval * 5
-			dmgTimeLosPenelty = dmgTimeLosPenelty * 2
+
+			playerStartingLives = playerStartingLives - 1
+			
+			
 		end
 		
 	end
@@ -242,22 +331,11 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("mainMenuInput") then
 		gamemode = message.gamemode
+		print("gggggggggggggggggggggggggg      " .. gamemode)
 		difficulty = message.difficulty
 		StartGame(self)
 	end
 	if message_id == hash("playerDamaged") then
-		if gamemode == "Timed" then
-			print("Penanlty")
-			timeToCollectLeft = timeToCollectLeft - dmgTimeLosPenelty
-		end
-	end
-end
-
-function on_input(self, action_id, action)
-	if action_id == hash("key1") then
-		if action.pressed then
-			
-			--msg.post("#", "StartGame", {})
-		end
+		PlayerTakeDmg(self)
 	end
 end
