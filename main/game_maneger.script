@@ -45,6 +45,16 @@ local difficulty
 
 local width, height = window.get_size()
 
+
+
+-- Sun and Moon
+
+local timeDayNightCycel = 30
+local moonSun_spawn_cooldoown = 0
+local spawnSun = false
+
+--
+
 function init(self)
 
 	timeToCollectLeft = totalTimeToCollect
@@ -94,7 +104,8 @@ function update(self, dt)
 		EndRound()
 	end
 	
-		star_spawn_cooldown = star_spawn_cooldown -dt
+	star_spawn_cooldown = star_spawn_cooldown -dt
+	moonSun_spawn_cooldoown = moonSun_spawn_cooldoown -dt
 
 
 
@@ -114,6 +125,22 @@ function update(self, dt)
 
 
 				star_spawn_cooldown = math.random(3, 6)
+
+			end
+
+			if moonSun_spawn_cooldoown < 0 then
+
+				local url 
+				if spawnSun then
+					url = "/game_maneger#sun_factory"
+				else
+					url = "/game_maneger#moon_factory"
+				end
+
+				local new_objekt  = factory.create(url,  vmath.vector3(1600, 600, 0), nil, {}, 0.6)
+				msg.post(new_objekt, "set_speed", { speed = (def_move_speed / 3) })
+				moonSun_spawn_cooldoown = timeDayNightCycel
+
 
 			end
 
@@ -253,7 +280,7 @@ function StartGame(self)
 	gameActive = true
 	label.set_text("/text_holder#Coins", "Coins: 0")
 	ApplyDifficulty(self)
-	player = factory.create("/game_maneger#player_factory", vmath.vector3(playerX_spawn, level_heights[1], 0),nil, {}, 0.2)
+	player = factory.create("/game_maneger#player_factory", vmath.vector3(playerX_spawn, level_heights[1], 1),nil, {}, 0.2)
 	msg.post(player, "set_level_heights", { heights = level_heights })
 	msg.post(player, "set_starting_lives", { lives = playerStartingLives })
 	-- Bygg URL för spinemodellen

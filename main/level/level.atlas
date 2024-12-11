@@ -19,4 +19,10 @@ images {
 images {
   image: "/main/level/images/star.png"
 }
+images {
+  image: "/main/level/images/Sun.png"
+}
+images {
+  image: "/main/level/images/Moon.png"
+}
 extrude_borders: 2
