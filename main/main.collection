@@ -1,17 +1,4 @@
 name: "main"
-instances {
-  id: "hero"
-  prototype: "/main/hero/hero.go"
-  position {
-    x: 100.0
-    y: 35.0
-  }
-  scale3 {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-}
 collection_instances {
   id: "level"
   collection: "/main/level/level.collection"
@@ -27,7 +14,6 @@ embedded_instances {
   "  y: 32.0\\n"
   "}\\n"
   "pivot: PIVOT_W\\n"
-  "text: \\\"Coins: 0\\\"\\n"
   "font: \\\"/builtins/fonts/default.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
@@ -44,7 +30,7 @@ embedded_instances {
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
-  "    y: -32.0\n"
+  "    y: -65.0\n"
   "  }\n"
   "}\n"
   "embedded_components {\n"
@@ -55,7 +41,6 @@ embedded_instances {
   "  y: 32.0\\n"
   "}\\n"
   "pivot: PIVOT_W\\n"
-  "text: \\\"Lives: 3\\\"\\n"
   "font: \\\"/builtins/fonts/default.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
@@ -88,9 +73,24 @@ embedded_instances {
   "    z: 2.0\n"
   "  }\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"Timer\"\n"
+  "  type: \"label\"\n"
+  "  data: \"size {\\n"
+  "  x: 128.0\\n"
+  "  y: 32.0\\n"
+  "}\\n"
+  "pivot: PIVOT_W\\n"
+  "font: \\\"/builtins/fonts/default.font\\\"\\n"
+  "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
+  "\"\n"
+  "  position {\n"
+  "    y: -32.0\n"
+  "  }\n"
+  "}\n"
   ""
   position {
-    y: 295.0
+    y: 351.0
   }
 }
 embedded_instances {
@@ -123,5 +123,27 @@ embedded_instances {
   "  data: \"prototype: \\\"/main/level/level_objekts/star.go\\\"\\n"
   "\"\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"player_factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/main/hero/hero.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"menu_factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/main/MainMenu.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"lable_factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/main/lableTemplet.go\\\"\\n"
+  "\"\n"
+  "}\n"
   ""
+}
+embedded_instances {
+  id: "MenuManeger"
+  data: ""
 }

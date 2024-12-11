@@ -1,0 +1,66 @@
+local menuState = "ChooseGameMode"
+local choosenGameMode 
+local choosenDifficulty
+
+
+local labels = { "#Promt", "#Choice1", "#Choice2"}
+local newLableTexts = {"Chose difficulty:", "*[1] Normal", "*[2] Hard"}
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	-- Ändra transparens till 50% (RGBA där A=0.5 för 50% transparens)
+	local tint = vmath.vector4(1, 1, 1, 0.8) -- RGB = 1,1,1 (vit), Alpha = 0.5
+	go.set("#sprite", "tint", tint)
+end
+function final(self)
+	-- Return input focus when the object is deleted
+	msg.post(".", "release_input_focus")
+end
+
+
+
+local key_actions = {
+	key1 = {
+		ChooseGameMode = function(self)
+			choosenGameMode = "Endless"
+			changePromtToDifficulty(self)
+		end,
+		ChooseDifficulty = function()
+			choosenDifficulty = "Normal"
+			msg.post("/game_maneger#game_maneger", "mainMenuInput", { gamemode = choosenGameMode, difficulty = choosenDifficulty })
+			go.delete()
+		end
+	},
+	key2 = {
+		ChooseGameMode = function(self)
+			choosenGameMode = "Timed"
+			changePromtToDifficulty(self)
+		end,
+		ChooseDifficulty = function()
+			choosenDifficulty = "Hard"
+			msg.post("/game_maneger#game_maneger", "mainMenuInput", { gamemode = choosenGameMode, difficulty = choosenDifficulty })
+			go.delete()
+		end
+	}
+}
+
+function on_input(self, action_id, action)
+	if action.pressed then
+		for key, actions in pairs(key_actions) do
+			if action_id == hash(key) and actions[menuState] then
+				actions[menuState](self)
+			end
+		end
+	end
+end
+
+
+
+function changePromtToDifficulty(self)
+	menuState = "ChooseDifficulty"
+	local tmp = 1
+	for _, Current_label in ipairs(labels) do
+		label.set_text(Current_label, newLableTexts[tmp])
+		tmp = tmp + 1
+	end
+end

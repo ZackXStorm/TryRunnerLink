@@ -3,12 +3,16 @@ key_trigger {
   action: "jump"
 }
 key_trigger {
-  input: KEY_2
-  action: "level2"
-}
-key_trigger {
   input: KEY_TAB
   action: "descend"
+}
+key_trigger {
+  input: KEY_1
+  action: "key1"
+}
+key_trigger {
+  input: KEY_2
+  action: "key2"
 }
 mouse_trigger {
   input: MOUSE_BUTTON_1
