@@ -82,9 +82,9 @@ function init(self)
 	end
 	UpdateSpeed()
 	--print(def_move_speed)
-	runPlatformLow = factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[2], 0), nil, {}, 0.5)
-	runPlatformHigh = factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[3], 0), nil, {}, 0.5)
-	local m = factory.create("/game_maneger#menu_factory", vmath.vector3(width / 2 ,(height / 2) + 20, 1), nil, {}, 1)
+	runPlatformLow = factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[2] - runPlatformsSeperationY, 0), nil, {}, 0.5)
+	runPlatformHigh = factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[3] + runPlatformsSeperationY, 0), nil, {}, 0.5)
+	local m = factory.create("/game_maneger#menu_factory", vmath.vector3(width / 2 ,(height / 2) - 60, 1), nil, {}, 1)
 	
 end
 
@@ -313,6 +313,7 @@ function UpdateSpeed()
 end
 	
 function StartGame(self)
+	moveObjektStartEndOfRound(true)
 	gameActive = true
 	label.set_text("/text_holder#Coins", "Coins: 0")
 	ApplyDifficulty(self)
@@ -328,7 +329,7 @@ function StartGame(self)
 end
 
 function GameOver(text, color)
-	moveObjektEndOfRound()
+	moveObjektStartEndOfRound(false)
 	if not playerDead then
 		sound.play("/SoundManeger#Win")
 	end
@@ -374,19 +375,23 @@ function GameOver(text, color)
 
 end
 
-function moveObjektEndOfRound()
+function moveObjektStartEndOfRound(startOfGame)
 
-	local playerPos = go.get_position(player)
-	go.set_position(vmath.vector3(playerPos.x, level_heights[2], playerPos.z), player)
+	if startOfGame == false then
+		local playerPos = go.get_position(player)
+		go.set_position(vmath.vector3(playerPos.x, level_heights[2], playerPos.z), player)
+		runPlatformsSeperationY = runPlatformsSeperationY * -1
+	end
+	
 	
 	-- Den nya positionen du vill att objektet ska röra sig till
 	
 	local targetPosPlatformHigh = go.get_position(runPlatformHigh)
-	targetPosPlatformHigh.y = targetPosPlatformHigh.y + runPlatformsSeperationY
+	targetPosPlatformHigh.y = targetPosPlatformHigh.y - runPlatformsSeperationY
 	local targetPosPlatformLow = go.get_position(runPlatformLow)
-	targetPosPlatformLow.y = targetPosPlatformLow.y - runPlatformsSeperationY
+	targetPosPlatformLow.y = targetPosPlatformLow.y + runPlatformsSeperationY
 	-- Tiden det ska ta för objektet att nå målet
-	local duration = 2.0  -- sekunder
+	local duration = 1.0  -- sekunder
 	-- Startar animationen
 	go.animate(runPlatformHigh, "position", go.PLAYBACK_ONCE_FORWARD, targetPosPlatformHigh, go.EASING_LINEAR, duration)
 	go.animate(runPlatformLow, "position", go.PLAYBACK_ONCE_FORWARD, targetPosPlatformLow, go.EASING_LINEAR, duration)

@@ -31,14 +31,14 @@ embedded_components {
   "  x: 128.0\n"
   "  y: 32.0\n"
   "}\n"
-  "pivot: PIVOT_W\n"
+  "pivot: PIVOT_NW\n"
   "text: \"Choose a game mode:\"\n"
   "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
-    x: -220.0
-    y: 76.0
+    x: -302.0
+    y: 105.0
   }
   scale {
     z: 1.5
@@ -51,14 +51,14 @@ embedded_components {
   "  x: 128.0\n"
   "  y: 32.0\n"
   "}\n"
-  "pivot: PIVOT_W\n"
+  "pivot: PIVOT_NW\n"
   "text: \"*[1] Endless\"\n"
   "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
-    x: -188.0
-    y: 45.0
+    x: -90.0
+    y: 105.0
   }
   scale {
     z: 1.5
@@ -71,14 +71,14 @@ embedded_components {
   "  x: 128.0\n"
   "  y: 32.0\n"
   "}\n"
-  "pivot: PIVOT_W\n"
+  "pivot: PIVOT_NW\n"
   "text: \"*[2] Timed\"\n"
   "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
-    x: -8.0
-    y: 45.0
+    x: 43.0
+    y: 105.0
   }
   scale {
     z: 1.5
