@@ -1,3 +1,7 @@
+components {
+  id: "GameOver"
+  component: "/main/GameOver.script"
+}
 embedded_components {
   id: "GameLabel"
   type: "label"

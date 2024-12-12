@@ -1,4 +1,4 @@
-local speed = 10
+local speed = 5
 
 function update(self, dt)
 
@@ -16,6 +16,7 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("set_speed") then 
 		speed = message.speed
-		--print("speeeed")
+		--print(message)
+		--print("speeeed   " ..speed)
 	end
 end

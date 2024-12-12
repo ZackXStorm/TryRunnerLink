@@ -2,10 +2,6 @@ components {
   id: "coin"
   component: "/main/level/level_objekts/coin/coin.script"
 }
-components {
-  id: "horizontal_moving"
-  component: "/main/horizontal_moving.script"
-}
 embedded_components {
   id: "sprite"
   type: "sprite"
