@@ -73,9 +73,20 @@ function changePromtToDifficulty(self)
 	local tmp = 1
 	for _, Current_label in ipairs(labels) do
 		if showDifficultyDescriptions and tmp == 3 then
+			newLableTexts[tmp] = newLableTexts[tmp] .. "\nIncludes:"
 			for _, description in ipairs(DefHardDifficultyDescription) do
 				newLableTexts[3] = newLableTexts[3] .. "\n".. description
 			end
+			local addURL 
+			if choosenGameMode == "Timed" then
+				addURL = TimedHardDifficultyDescriptionAddisions
+			else
+				addURL = EndlessHardDifficultyDescriptionAddisions
+			end
+			for _, description in ipairs(addURL) do
+				newLableTexts[3] = newLableTexts[3] .. "\n".. description
+			end
+			
 
 		end
 		label.set_text(Current_label, newLableTexts[tmp])
