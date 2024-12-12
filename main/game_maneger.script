@@ -191,24 +191,24 @@ function UpdateAllLevelObjektsPosition()
 
 	for i = #levelObjekts, 1, -1 do
 		local url = levelObjekts[i]
-		print("Processing object with URL:", tostring(url)) -- Gör URL:en läsbar
+		--print("Processing object with URL:", tostring(url)) -- Gör URL:en läsbar
 
 		local ok, objketPos = pcall(go.get_position, url)
 		if ok then
-			print("Old position:", objketPos)
+			--print("Old position:", objketPos)
 
 			objketPos.x = objketPos.x - def_move_speed
 			go.set_position(objketPos, url)
 
-			print("New position:", objketPos)
+			--print("New position:", objketPos)
 
 			if objketPos.x < -100 then
 				go.delete(url)
 				table.remove(levelObjekts, i)
-				print("Object deleted:", tostring(url))
+				--print("Object deleted:", tostring(url))
 			end
 		else
-			print("Error fetching position for:", tostring(url))
+			--print("Error fetching position for:", tostring(url))
 		end
 	end
 	
@@ -223,7 +223,7 @@ function EndRound()
 end
 
 function PlayerTakeDmg(self)
-	
+	sound.play("/SoundManeger#spikeHit")
 	if gamemode == "Endless" then
 		-- Hämta aktuell text från labeln
 		local current_text = label.get_text("/text_holder#Coins")
