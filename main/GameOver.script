@@ -10,8 +10,9 @@ end
 
 function on_input(self, action_id, action)
 	
-	if action_id == hash("enter") then
+	if action_id == hash("esc") then
 		if action.pressed then
+			sound.play("/SoundManeger#menuInput")
 			msg.post("@system:", "exit", { code = 0, resources = nil })
 			
 		end

@@ -6,11 +6,13 @@ embedded_components {
   id: "Title"
   type: "label"
   data: "size {\n"
-  "  x: 128.0\n"
+  "  x: 400.0\n"
   "  y: 32.0\n"
   "}\n"
+  "tracking: 0.2\n"
+  "line_break: true\n"
   "text: \"Welcome to the Endless runner Marcus edition\"\n"
-  "font: \"/builtins/fonts/default.font\"\n"
+  "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
@@ -31,7 +33,7 @@ embedded_components {
   "}\n"
   "pivot: PIVOT_W\n"
   "text: \"Choose a game mode:\"\n"
-  "font: \"/builtins/fonts/default.font\"\n"
+  "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
@@ -51,7 +53,7 @@ embedded_components {
   "}\n"
   "pivot: PIVOT_W\n"
   "text: \"*[1] Endless\"\n"
-  "font: \"/builtins/fonts/default.font\"\n"
+  "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
@@ -71,7 +73,7 @@ embedded_components {
   "}\n"
   "pivot: PIVOT_W\n"
   "text: \"*[2] Timed\"\n"
-  "font: \"/builtins/fonts/default.font\"\n"
+  "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {
@@ -85,7 +87,7 @@ embedded_components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"A_black_image\"\n"
+  data: "default_animation: \"Space button\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 3264.0\n"
@@ -100,7 +102,7 @@ embedded_components {
     y: 72.0
   }
   scale {
-    x: 0.170289
-    y: 0.086909
+    x: 8.045003
+    y: 7.762527
   }
 }

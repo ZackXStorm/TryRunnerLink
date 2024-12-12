@@ -10,7 +10,7 @@ embedded_components {
   "  y: 32.0\n"
   "}\n"
   "text: \"That\\\'s Game\"\n"
-  "font: \"/builtins/fonts/default.font\"\n"
+  "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   scale {
@@ -27,7 +27,7 @@ embedded_components {
   "  y: 32.0\n"
   "}\n"
   "text: \"---------\"\n"
-  "font: \"/builtins/fonts/default.font\"\n"
+  "font: \"/main/Fonts/Space Font2.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   position {

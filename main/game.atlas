@@ -1,4 +1,7 @@
 images {
   image: "/main/level/images/A_black_image.jpg"
 }
+images {
+  image: "/main/level/images/Space button.png"
+}
 extrude_borders: 2

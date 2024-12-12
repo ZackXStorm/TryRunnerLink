@@ -30,6 +30,8 @@ function on_message(self, message_id, message, sender)
 	
 	if self.collected == false and message_id == hash("collision_response") then
 		self.collected = true
+		--particlefx.play("#CoinCollect")
+		msg.post("/game_maneger#game_maneger", "coin")
 		msg.post("#sprite", "disable")
 		
 		-- Hämta aktuell text från labeln

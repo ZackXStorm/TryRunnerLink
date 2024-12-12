@@ -257,7 +257,7 @@ end
 local function jump(self)
 	-- only allow jump from ground
 	if self.ground_contact and at_level < 3 and not moveLock then
-		-- set take-off 
+		sound.play("/SoundManeger#jump")
 		
 		--print("was at  ".. at_level)
 		at_level = at_level + 1
@@ -275,6 +275,7 @@ end
 
 local function descend(self)
 	if at_level > 1 and not moveLock then
+		sound.play("/SoundManeger#land")
 		at_level = at_level - 1
 
 		local pos = go.get_position()

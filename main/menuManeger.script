@@ -6,11 +6,18 @@ local choosenDifficulty
 local labels = { "#Promt", "#Choice1", "#Choice2"}
 local newLableTexts = {"Chose difficulty:", "*[1] Normal", "*[2] Hard"}
 
+
+local showDifficultyDescriptions = true
+local DefHardDifficultyDescription = { "Everything moves faster " , "Spawn closer to the right", "Spikes spawn more often"}
+local EndlessHardDifficultyDescriptionAddisions = {"Coins spawn less often", "One less staring life"  }
+local TimedHardDifficultyDescriptionAddisions = {"Increased time penalty loss on hit "  }
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	-- Ändra transparens till 50% (RGBA där A=0.5 för 50% transparens)
 	local tint = vmath.vector4(1, 1, 1, 0.8) -- RGB = 1,1,1 (vit), Alpha = 0.5
 	go.set("#sprite", "tint", tint)
+	sound.play("/SoundManeger#bacSound")
 end
 function final(self)
 	-- Return input focus when the object is deleted
@@ -53,6 +60,7 @@ function on_input(self, action_id, action)
 		for key, actions in pairs(key_actions) do
 			if action_id == hash(key) and actions[menuState] then
 				actions[menuState](self)
+				sound.play("/SoundManeger#menuInput")
 			end
 		end
 	end
@@ -64,6 +72,12 @@ function changePromtToDifficulty(self)
 	menuState = "ChooseDifficulty"
 	local tmp = 1
 	for _, Current_label in ipairs(labels) do
+		if showDifficultyDescriptions and tmp == 3 then
+			for _, description in ipairs(DefHardDifficultyDescription) do
+				newLableTexts[3] = newLableTexts[3] .. "\n".. description
+			end
+
+		end
 		label.set_text(Current_label, newLableTexts[tmp])
 		tmp = tmp + 1
 	end

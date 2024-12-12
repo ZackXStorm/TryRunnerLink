@@ -2,6 +2,14 @@ components {
   id: "hero"
   component: "/main/hero/hero.script"
 }
+components {
+  id: "CoinCollect"
+  component: "/main/CoinCollect.particlefx"
+  position {
+    y: 300.0
+    z: 1.0
+  }
+}
 embedded_components {
   id: "spinemodel"
   type: "spinemodel"

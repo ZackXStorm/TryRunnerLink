@@ -15,8 +15,8 @@ key_trigger {
   action: "key2"
 }
 key_trigger {
-  input: KEY_ENTER
-  action: "enter"
+  input: KEY_ESC
+  action: "esc"
 }
 mouse_trigger {
   input: MOUSE_BUTTON_1

@@ -1,0 +1,5 @@
+font: "/main/Fonts/VeniteAdoremusStraight-Yzo6v.ttf"
+material: "/builtins/fonts/font.material"
+size: 15
+output_format: TYPE_DISTANCE_FIELD
+characters: " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"

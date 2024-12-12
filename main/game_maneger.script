@@ -14,7 +14,8 @@ local player
 local playerStartingLives = 3
 local playerTimesHit = 0
 local PlayerCoins
-local playerX_spawn = 100
+local playerX_spawn = 110
+local playerDead = false
 --
 local gameActive = false
 
@@ -57,6 +58,10 @@ local spawnSun = false
 
 --
 
+local runPlatformHigh
+local runPlatformLow
+local runPlatformsSeperationY = 50
+
 local allSpawnX = 1800
 
 function init(self)
@@ -77,8 +82,8 @@ function init(self)
 	end
 	UpdateSpeed()
 	--print(def_move_speed)
-	factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[2], 0), nil, {}, 0.5)
-	factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[3], 0), nil, {}, 0.5)
+	runPlatformLow = factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[2], 0), nil, {}, 0.5)
+	runPlatformHigh = factory.create("#runner_platform_factory",  vmath.vector3(0, level_heights[3], 0), nil, {}, 0.5)
 	local m = factory.create("/game_maneger#menu_factory", vmath.vector3(width / 2 ,(height / 2) + 20, 1), nil, {}, 1)
 	
 end
@@ -258,6 +263,8 @@ function PlayerTakeDmg(self)
 		if (playerStartingLives - playerTimesHit) <= 0 then
 			-- Die and restart
 			msg.post(player, "playerDie")
+			playerDead = true
+			sound.play("/SoundManeger#playerDie")
 			--local text_url = msg.url("/text_holder#GameOver") -- URL till textkomponenten
 			--go.set(text_url, "color.w", 1) -- Sätter alfa (w) till 1 för att göra den synlig
 			EndRound()
@@ -312,6 +319,7 @@ function StartGame(self)
 	player = factory.create("/game_maneger#player_factory", vmath.vector3(playerX_spawn, level_heights[1], 1),nil, {}, 0.2)
 	msg.post(player, "set_level_heights", { heights = level_heights })
 	msg.post(player, "set_starting_lives", { lives = playerStartingLives })
+	
 	-- Bygg URL för spinemodellen
 	spinemodel_url = msg.url(player) -- Skapar en bas-URL från instans-ID:t
 	spinemodel_url.fragment = "spinemodel" -- Lägg till komponentnamnet
@@ -320,6 +328,10 @@ function StartGame(self)
 end
 
 function GameOver(text, color)
+	moveObjektEndOfRound()
+	if not playerDead then
+		sound.play("/SoundManeger#Win")
+	end
 	UpdateLivesLable(self)
 	UpdateTimmer(self)
 	gameActive = false
@@ -327,7 +339,7 @@ function GameOver(text, color)
 	def_move_speed = 0
 	UpdateSpeed()
 	msg.post(player, "gameOver")
-	local pos = vmath.vector3( width/ 2, (height / 2 )+ 90, 0)
+	local pos = vmath.vector3( width/ 2, (height / 2 )+ 110, 0)
 	local gameObjekt =factory.create("/game_maneger#gameOver_factory", pos, nil, {}, 1)
 	local gameLabel_url = msg.url(gameObjekt)
 	gameLabel_url.fragment = "GameLabel"
@@ -354,7 +366,7 @@ function GameOver(text, color)
 		end
 		
 	end
-	newText = newText .. "\n[Enter] Exit"
+	newText = newText .. "\n[Esc] Exit"
 	label.set_text(gameLabel_url2, newText)
 	--local anim_props = { blend_duration = 0.15 }
 	--spine.play_anim(spinemodel_url, hash("run-to-idle"), go.PLAYBACK_LOOP_FORWARD, anim_props)
@@ -362,11 +374,30 @@ function GameOver(text, color)
 
 end
 
+function moveObjektEndOfRound()
+
+	local playerPos = go.get_position(player)
+	go.set_position(vmath.vector3(playerPos.x, level_heights[2], playerPos.z), player)
+	
+	-- Den nya positionen du vill att objektet ska röra sig till
+	
+	local targetPosPlatformHigh = go.get_position(runPlatformHigh)
+	targetPosPlatformHigh.y = targetPosPlatformHigh.y + runPlatformsSeperationY
+	local targetPosPlatformLow = go.get_position(runPlatformLow)
+	targetPosPlatformLow.y = targetPosPlatformLow.y - runPlatformsSeperationY
+	-- Tiden det ska ta för objektet att nå målet
+	local duration = 2.0  -- sekunder
+	-- Startar animationen
+	go.animate(runPlatformHigh, "position", go.PLAYBACK_ONCE_FORWARD, targetPosPlatformHigh, go.EASING_LINEAR, duration)
+	go.animate(runPlatformLow, "position", go.PLAYBACK_ONCE_FORWARD, targetPosPlatformLow, go.EASING_LINEAR, duration)
+
+end
+
 function ApplyDifficulty(self)
 	if difficulty == "Hard" then
 		print("HARRRRRD")
 		dmgTimeLosPenelty = dmgTimeLosPenelty * 2
-		spikeSpawnExponentialIncrease = spikeSpawnExponentialIncrease * 2
+		spikeSpawnExponentialIncrease = spikeSpawnExponentialIncrease * 3
 		playerX_spawn = playerX_spawn + 150
 		def_move_speed = def_move_speed * 1.3
 		timeWaitAfterGameOver = timeWaitAfterGameOver - 2
@@ -386,6 +417,13 @@ function ApplyDifficulty(self)
 end
 
 function on_message(self, message_id, message, sender)
+	if message_id == hash("coin") then
+		local coinEffect_url = msg.url(player) -- Skapar en bas-URL från instans-ID:t
+		coinEffect_url.fragment = "CoinCollect" -- Lägg till komponentnamnet
+		sound.play("/SoundManeger#collectCoin")
+		particlefx.play(coinEffect_url)
+		print("plattttttttttttttttttttt")
+	end
 	if message_id == hash("mainMenuInput") then
 		gamemode = message.gamemode
 		print("gggggggggggggggggggggggggg      " .. gamemode)
