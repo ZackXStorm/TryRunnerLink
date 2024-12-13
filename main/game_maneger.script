@@ -1,36 +1,36 @@
 
-local levelObjekts = {}
+local levelObjekts = {} -- listan med alla horizontelt rörande level objekt, ex spikar, coins, månen
 
--- Timed
-local totalTimeToCollect = 200
-local timeToCollectLeft
-local dmgTimeLosPenelty = 20
+-- Timed game mode
+local totalTimeToCollect = 200 -- tiden spelar har för att collecta coins
+local timeToCollectLeft -- tiden som är kvar att collecta coins
+local dmgTimeLosPenelty = 20 -- tiden spelaren förlorar när den blir träfad av spikar
 -- 
 
+-- Endless
+local playerStartingLives = 3 -- antalet liv som spelaren startar med
+local playerDead = false -- om spelaren lever eller har döt (aka playerStartingLives - playerTimesHit <= 0)
+--
 
 -- Player
-local spinemodel_url
-local player
-local playerStartingLives = 3
-local playerTimesHit = 0
-local PlayerCoins
-local playerX_spawn = 110
-local playerDead = false
+local spinemodel_url -- url till spelarens spine model komponänt
+local player -- url till hela spelar objektet
+local playerTimesHit = 0 -- antal gånger som spelaren blivit träffad av en spik
+local playerX_spawn = 110 -- x värdet speler spawnar på i början av spelet
 --
-local gameActive = false
 
+
+
+local gameActive = false
 local level_heights = { 35, 280, 500 }
 local level_heights_recipients = {
 	"/hero#hero"
 }
---
 
-local beginEndingRound = false
-local timeWaitAfterGameOver = 7
-local allDone = false
 
-local def_objekt_spawn_cooldown = 3
-local def_objekt_spawn_cooldown_add = 3
+local beginEndingRound = false -- påbörja att avsluta rundan, aka spawna inga fler coins och spikar och låt alla som redan är där att lämna skärmen
+local timeWaitAfterGameOver = 7 -- tiden spelet ska vänta från att man börjar att avsluta rundan tills att game over skärmen visas. bara så att allting på skärmen ska lämna den
+
 
 local def_move_speed = 5
 local coin_spawn_cooldown = 0.5
@@ -152,8 +152,6 @@ function update(self, dt)
 				gameTime = gameTime + dt
 				timeToCollectLeft = timeToCollectLeft - dt
 				UpdateTimmer(self)
-				def_objekt_spawn_cooldown = def_objekt_spawn_cooldown -dt
-				--if def_objekt_spawn_cooldown < 0 then
 				coin_spawn_cooldown = coin_spawn_cooldown - dt
 				spike_spawn_cooldown = spike_spawn_cooldown - dt
 				if coin_spawn_cooldown < 0 then
@@ -163,7 +161,7 @@ function update(self, dt)
 					--msg.post(new_objekt, "set_speed", { speed = def_move_speed })
 					table.insert(levelObjekts, new_objekt)
 					coin_spawn_cooldown = coin_spawn_interval
-					--def_objekt_spawn_cooldown = def_objekt_spawn_cooldown_add
+					
 
 				end
 				if  spike_spawn_cooldown < 0 then
@@ -179,17 +177,11 @@ function update(self, dt)
 					end
 					spike_spawn_cooldown = cooldown
 					--print("C:   "..cooldown)
-					--def_objekt_spawn_cooldown = def_objekt_spawn_cooldown_add
+					
 
 				end
 			end
 		end
-		
-		--end
-
-		
-	
-
 end
 
 function UpdateAllLevelObjektsPosition()
@@ -229,6 +221,7 @@ end
 
 function PlayerTakeDmg(self)
 	sound.play("/SoundManeger#spikeHit")
+	playerTimesHit = playerTimesHit + 1
 	if gamemode == "Endless" then
 		-- Hämta aktuell text från labeln
 		local current_text = label.get_text("/text_holder#Coins")
@@ -252,9 +245,9 @@ function PlayerTakeDmg(self)
 
 		else 
 
-			playerTimesHit = playerTimesHit + 1
+			
 			new_text = new_text .. "0"
-			UpdateLivesLable(self)
+			
 			
 			
 			
@@ -270,11 +263,11 @@ function PlayerTakeDmg(self)
 			EndRound()
 
 		end
+		
 	
 	end
 
-	if gamemode == "Timed" then
-		playerTimesHit = playerTimesHit + 1
+	if gamemode == "Timed" then 	
 		timeToCollectLeft = timeToCollectLeft - dmgTimeLosPenelty
 		if timeToCollectLeft < 0 then
 			timeToCollectLeft = 0
@@ -282,6 +275,8 @@ function PlayerTakeDmg(self)
 		UpdateTimmer(self)
 		
 	end
+
+	UpdateLivesLable(self)
 		
 	
 end
@@ -377,10 +372,12 @@ end
 
 function moveObjektStartEndOfRound(startOfGame)
 
-	if startOfGame == false then
-		local playerPos = go.get_position(player)
-		go.set_position(vmath.vector3(playerPos.x, level_heights[2], playerPos.z), player)
+	if startOfGame == false  then
 		runPlatformsSeperationY = runPlatformsSeperationY * -1
+		if not (playerDead) then
+			local playerPos = go.get_position(player)
+			go.set_position(vmath.vector3(playerPos.x, level_heights[2], playerPos.z), player)
+		end
 	end
 	
 	
